@@ -209,38 +209,23 @@ function ApertureLayered() {
       transition={{ duration: 0.7, delay: 0.12, ease: easeOut }}
     >
       <div
-        className="pointer-events-none absolute -inset-y-5 -left-5 right-5 z-0 rounded-[7px] border border-dashed border-[var(--line)] font-['DM_Mono',monospace] text-[7px] font-light tracking-[0.09em] text-[var(--muted)] opacity-60 max-sm:left-[-12px]"
+        className="pointer-events-none rounded-[7px] p-3.5 border border-dashed border-[var(--line)] font-['DM_Mono',monospace] text-[7px] font-light tracking-[0.09em] text-[var(--muted)] opacity-60"
         aria-hidden="true"
       >
-        <span className="absolute left-3 top-[9px]">
-          SYSTEM CONFIG: SILO-V1
-        </span>
-        <span className="absolute bottom-[9px] right-3">
-          LATITUDE REF: 45.321°
-        </span>
-      </div>
-      <motion.figure
-        className="relative z-[1] m-0 aspect-square overflow-hidden rounded-[7px] border border-[var(--line)] bg-[var(--soft)] shadow-[0_8px_24px_rgba(32,35,31,0.06)] [&>img]:size-full [&>img]:object-cover [&>img]:opacity-90"
-        whileHover={reduce ? undefined : { scale: 1.025 }}
-        transition={{ duration: 0.65, ease: easeOut }}
-      >
-        <img
-          src="/silo-aperture-square.png"
-          alt="Looking upward through the circular opening inside a concrete silo"
-        />
-        <div
-          className="pointer-events-none absolute inset-0 [background:repeating-linear-gradient(0deg,rgba(25,27,24,0.025)_0_1px,transparent_1px_12px)]"
-          aria-hidden="true"
-        />
-      </motion.figure>
-      <div
-        className="pointer-events-none absolute -right-6 bottom-1/4 top-1/4 z-0 flex w-4 flex-col items-center justify-between border-x border-[var(--line)] py-2 font-['DM_Mono',monospace] text-[7px] font-light text-[var(--muted)] max-sm:-right-[17px]"
-        aria-hidden="true"
-      >
-        <span>+100</span>
-        <span>+50</span>
-        <span>0</span>
-        <span>-50</span>
+        <motion.figure
+          className="relative z-[1] m-0 aspect-square overflow-hidden rounded-[7px] border border-[var(--line)] bg-[var(--soft)] shadow-[0_8px_24px_rgba(32,35,31,0.06)] [&>img]:size-full [&>img]:object-cover [&>img]:opacity-90"
+          whileHover={reduce ? undefined : { scale: 1.025 }}
+          transition={{ duration: 0.65, ease: easeOut }}
+        >
+          <img
+            src="/silo-aperture-square.png"
+            alt="Looking upward through the circular opening inside a concrete silo"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 [background:repeating-linear-gradient(0deg,rgba(25,27,24,0.025)_0_1px,transparent_1px_12px)]"
+            aria-hidden="true"
+          />
+        </motion.figure>
       </div>
     </motion.div>
   );
@@ -320,9 +305,9 @@ function Hero() {
             viewport={viewportOnce}
             transition={{ duration: 0.45, delay: 0.36, ease: easeOut }}
           >
-            <li>No account</li>
-            <li>No sync server</li>
-            <li>Explicit autofill</li>
+            <li>Local-first</li>
+            <li>Encrypted data</li>
+            <li>Explicit actions</li>
           </motion.ul>
         </div>
         <ApertureLayered />
@@ -456,14 +441,7 @@ function TruthVisual({ type, active = false }) {
             />
           </pattern>
         </defs>
-        <motion.g
-          animate={live ? { y: -2 } : { y: 0 }}
-          transition={{
-            duration: 0.7,
-            ease: easeOut,
-            repeat: live ? 1 : 0,
-          }}
-        >
+        <g>
           <path
             d="M75 25h50l15 15v75H75Z"
             stroke="currentColor"
@@ -483,7 +461,7 @@ function TruthVisual({ type, active = false }) {
             strokeOpacity="0.15"
             strokeWidth="1"
           />
-        </motion.g>
+        </g>
         <motion.circle
           cx="100"
           cy="68"
@@ -548,9 +526,7 @@ function TruthVisual({ type, active = false }) {
           r="2.5"
           fill="#ff5500"
           animate={
-            live
-              ? { scale: [1, 1.55, 1], x: [0, 3, 0] }
-              : { scale: 1, x: 0 }
+            live ? { scale: [1, 1.55, 1], x: [0, 3, 0] } : { scale: 1, x: 0 }
           }
           transition={
             live
@@ -584,35 +560,37 @@ function TruthVisual({ type, active = false }) {
             />
           </pattern>
         </defs>
-        <circle
-          cx="110"
-          cy="70"
-          r="42"
-          stroke="currentColor"
-          strokeOpacity="0.15"
-          strokeWidth="1.5"
-          fill="none"
-        />
-        {Array.from({ length: 36 }).map((_, index) => {
-          const angle = (index * 10 * Math.PI) / 180;
-          const highlighted = index >= 3 && index <= 14;
-          const point = (radius, axis) =>
-            (axis === "x"
-              ? 110 + radius * Math.cos(angle)
-              : 70 + radius * Math.sin(angle)
-            ).toFixed(6);
-          return (
-            <line
-              key={index}
-              x1={point(38, "x")}
-              y1={point(38, "y")}
-              x2={point(42, "x")}
-              y2={point(42, "y")}
-              stroke={highlighted ? "#ff5500" : "currentColor"}
-              strokeOpacity={highlighted ? 1 : 0.4}
-              strokeWidth={highlighted ? 1.5 : 1}
-            />
-          );
+        {Array.from({ length: 36 }).flatMap((_, groupIndex) => {
+          const groupSpan = 10;
+          const base = groupIndex * groupSpan;
+          const ticks = [
+            { angle: base, size: "long" },
+            { angle: base + groupSpan * 0.38, size: "short" },
+            { angle: base + groupSpan * 0.62, size: "short" },
+          ];
+          return ticks.map((tick, tickIndex) => {
+            const angle = (tick.angle * Math.PI) / 180;
+            const highlighted = tick.angle >= 30 && tick.angle <= 140;
+            const innerRadius = tick.size === "long" ? 40 : 42;
+            const outerRadius = tick.size === "long" ? 48 : 46;
+            const point = (radius, axis) =>
+              (axis === "x"
+                ? 110 + radius * Math.cos(angle)
+                : 70 + radius * Math.sin(angle)
+              ).toFixed(6);
+            return (
+              <line
+                key={`${groupIndex}-${tickIndex}`}
+                x1={point(innerRadius, "x")}
+                y1={point(innerRadius, "y")}
+                x2={point(outerRadius, "x")}
+                y2={point(outerRadius, "y")}
+                stroke={highlighted ? "#ff5500" : "currentColor"}
+                strokeOpacity={highlighted ? 1 : 0.4}
+                strokeWidth={highlighted ? 1 : 0.5}
+              />
+            );
+          });
         })}
         <circle
           cx="110"
@@ -819,7 +797,6 @@ function StudiesPanel({ headingRef }) {
     <div className="h-full">
       <div className="mb-[70px] grid grid-cols-[1fr_0.62fr] items-end gap-[11vw] max-[900px]:grid-cols-2 max-[900px]:gap-[7vw] max-sm:block">
         <Reveal>
-          <p className={monoLabel}>Boundary studies</p>
           <h2
             className="m-0 text-[clamp(56px,6.2vw,90px)] font-normal leading-[0.95] tracking-[-0.068em] text-balance focus:outline-none max-sm:text-[clamp(51px,15vw,70px)]"
             ref={headingRef}
@@ -887,7 +864,6 @@ function Workspace({ headingRef }) {
       id="workspace"
     >
       <Reveal>
-        <p className={monoLabel}>The daily surface</p>
         <h2
           className="m-0 text-[clamp(52px,5.2vw,76px)] font-normal leading-[0.95] tracking-[-0.065em] text-balance focus:outline-none max-[900px]:text-[52px] max-sm:text-[51px]"
           ref={headingRef}
@@ -928,7 +904,7 @@ function Workspace({ headingRef }) {
           aria-label="Interactive preview of the Silo workspace"
         >
           <div className="flex min-h-[42px] items-center justify-between border-b border-[var(--line)] px-4 font-['DM_Mono',monospace] text-[10px] tracking-[0.04em] text-[var(--muted)]">
-            <span>silo / default.vault</span>
+            <span>Silo</span>
             <span className="inline-flex items-center gap-[7px]">
               <i className="size-[5px] rounded-full bg-[var(--orange)]" />{" "}
               unlocked
@@ -937,7 +913,7 @@ function Workspace({ headingRef }) {
           <div className="grid min-h-[410px] grid-cols-[0.78fr_1.22fr]">
             <div className="flex min-w-0 flex-col border-r border-[var(--line)]">
               <div className="border-b border-[var(--line)] px-3.5 py-[15px] font-['DM_Mono',monospace] text-[10px] font-light text-[var(--muted)]">
-                <span className="mr-2 text-[var(--orange)]">/</span> Search
+                <span className="mr-1 text-[var(--orange)]">/</span> Search
                 authentications
               </div>
               <div className="grid gap-1 p-[7px]">
@@ -1391,7 +1367,6 @@ function System() {
         className={`${shell} mb-[70px] grid grid-cols-[1fr_0.62fr] items-end gap-[11vw] max-[900px]:grid-cols-2 max-[900px]:gap-[7vw] max-sm:block`}
       >
         <Reveal>
-          <p className={monoLabel}>The silo cutaway</p>
           <h2 className="m-0 text-[clamp(56px,6.2vw,90px)] font-normal leading-[1.04] tracking-[-0.068em] text-balance max-sm:text-[clamp(51px,15vw,70px)]">
             Four parts.
             <br />
@@ -1441,7 +1416,7 @@ function System() {
               </motion.div>
             </AnimatePresence>
             <div
-              className="mt-[52px] grid gap-1 border-t border-[var(--line)] pt-1"
+              className="mt-[52px] grid gap-1 border-t border-[var(--line)]"
               role="group"
               aria-label="Architecture layers"
             >
@@ -1641,7 +1616,7 @@ function Start() {
       id="start"
     >
       <div
-        className="absolute left-1/2 top-1/2 z-0 h-80 w-[760px] -translate-x-1/2 -translate-y-[55%] -rotate-[8deg] rounded-[50%] border border-black/[0.08] max-sm:w-[620px] [&>i]:absolute [&>i]:left-1/2 [&>i]:top-1/2 [&>i]:size-[510px] [&>i]:-translate-x-1/2 [&>i]:-translate-y-1/2 [&>i]:rounded-full [&>i]:border [&>i]:border-black/[0.08] [&>i:nth-child(2)]:size-[210px]"
+        className="absolute left-1/2 top-1/2 z-0 h-80 w-[760px] -translate-x-1/2 -translate-y-[55%] -rotate-[8deg] rounded-[50%] border border-black/6 max-sm:w-155 [&>i]:absolute [&>i]:left-1/2 [&>i]:top-1/2 [&>i]:size-[510px] [&>i]:-translate-x-1/2 [&>i]:-translate-y-1/2 [&>i]:rounded-full [&>i]:border [&>i]:border-black/6 [&>i:nth-child(2)]:size-[210px]"
         aria-hidden="true"
       >
         <i />
@@ -1699,7 +1674,7 @@ function Start() {
           </motion.button>
         </Reveal>
       </div>
-      <Reveal delay={0.1} className="relative z-[2]">
+      <Reveal delay={0.1} className="relative z-50">
         <footer className="grid grid-cols-3 items-center border-t border-[var(--line)] pt-[25px] max-sm:grid-cols-[1fr_auto]">
           <a href="#top" aria-label="Silo home">
             <Brand />
