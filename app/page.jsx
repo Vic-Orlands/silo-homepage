@@ -110,7 +110,7 @@ function Header() {
           <span>Silo</span>
         </a>
         <nav
-          className="flex items-center gap-1.5 max-sm:gap-0.5"
+          className="flex items-center gap-3 max-sm:gap-1.5"
           aria-label="Project links"
         >
           <a
@@ -326,8 +326,10 @@ function Hero() {
   );
 }
 
-function TruthVisual({ type }) {
+function TruthVisual({ type, active = false }) {
   const id = useId().replaceAll(":", "");
+  const reduce = useReducedMotion();
+  const live = active && !reduce;
 
   if (type === "file") {
     const denseId = `${id}-dense-vertical`;
@@ -368,42 +370,61 @@ function TruthVisual({ type }) {
             />
           </pattern>
         </defs>
-        <path
-          d="M75 25h50l15 15v75H75Z"
-          stroke="currentColor"
-          strokeWidth="1"
-          fill="none"
-        />
-        <path
-          d="M125 25v15h15"
-          stroke="currentColor"
-          strokeWidth="1"
-          fill="none"
-        />
-        <path
-          d="M80 45h40v45H80Z"
-          fill={`url(#${denseId})`}
-          stroke="currentColor"
-          strokeOpacity="0.15"
-          strokeWidth="1"
-        />
-        <circle
+        <motion.g
+          animate={live ? { y: -2 } : { y: 0 }}
+          transition={{ duration: 0.35, ease: easeOut }}
+        >
+          <path
+            d="M75 25h50l15 15v75H75Z"
+            stroke="currentColor"
+            strokeWidth="1"
+            fill="none"
+          />
+          <path
+            d="M125 25v15h15"
+            stroke="currentColor"
+            strokeWidth="1"
+            fill="none"
+          />
+          <path
+            d="M80 45h40v45H80Z"
+            fill={`url(#${denseId})`}
+            stroke="currentColor"
+            strokeOpacity="0.15"
+            strokeWidth="1"
+          />
+        </motion.g>
+        <motion.circle
           cx="100"
           cy="68"
           r="16"
           fill="none"
           stroke="#ff5500"
           strokeWidth="1"
+          style={{ transformOrigin: "100px 68px" }}
+          animate={
+            live
+              ? { scale: [1, 1.12, 1], opacity: [1, 0.7, 1] }
+              : { scale: 1, opacity: 1 }
+          }
+          transition={
+            live
+              ? { duration: 1.1, ease: easeOut, times: [0, 0.45, 1] }
+              : { duration: 0.3 }
+          }
         />
-        <circle
+        <motion.circle
           cx="100"
           cy="68"
           r="10"
           fill={`url(#${orangeId})`}
           stroke="#ff5500"
           strokeWidth="0.5"
+          style={{ transformOrigin: "100px 68px" }}
+          animate={live ? { rotate: 180 } : { rotate: 0 }}
+          transition={{ duration: 0.9, ease: easeOut }}
         />
-        <line
+        <motion.line
           x1="140"
           y1="68"
           x2="165"
@@ -411,8 +432,33 @@ function TruthVisual({ type }) {
           stroke="#ff5500"
           strokeWidth="1"
           strokeDasharray="2 2"
+          animate={
+            live
+              ? { strokeDashoffset: [0, -16], opacity: [0.45, 1] }
+              : { strokeDashoffset: 0, opacity: 1 }
+          }
+          transition={
+            live
+              ? { duration: 0.85, ease: "linear", repeat: 0 }
+              : { duration: 0.25 }
+          }
         />
-        <circle cx="165" cy="68" r="2.5" fill="#ff5500" />
+        <motion.circle
+          cx="165"
+          cy="68"
+          r="2.5"
+          fill="#ff5500"
+          animate={
+            live
+              ? { scale: [1, 1.55, 1], x: [0, 3, 0] }
+              : { scale: 1, x: 0 }
+          }
+          transition={
+            live
+              ? { duration: 0.9, ease: easeOut, delay: 0.15 }
+              : { duration: 0.25 }
+          }
+        />
       </svg>
     );
   }
@@ -457,7 +503,7 @@ function TruthVisual({ type }) {
               : 70 + radius * Math.sin(angle)
             ).toFixed(6);
           return (
-            <line
+            <motion.line
               key={index}
               x1={point(38, "x")}
               y1={point(38, "y")}
@@ -466,6 +512,20 @@ function TruthVisual({ type }) {
               stroke={highlighted ? "#ff5500" : "currentColor"}
               strokeOpacity={highlighted ? 1 : 0.4}
               strokeWidth={highlighted ? 1.5 : 1}
+              animate={
+                live && highlighted
+                  ? { opacity: [0.35, 1, 0.35, 1] }
+                  : { opacity: 1 }
+              }
+              transition={
+                live && highlighted
+                  ? {
+                      duration: 1.2,
+                      delay: (index - 3) * 0.03,
+                      ease: "easeOut",
+                    }
+                  : { duration: 0.2 }
+              }
             />
           );
         })}
@@ -478,7 +538,7 @@ function TruthVisual({ type }) {
           strokeOpacity="0.1"
           strokeWidth="1"
         />
-        <line
+        <motion.line
           x1="110"
           y1="70"
           x2="132"
@@ -486,6 +546,13 @@ function TruthVisual({ type }) {
           stroke="#ff5500"
           strokeWidth="2"
           strokeLinecap="round"
+          style={{ transformOrigin: "110px 70px" }}
+          animate={live ? { rotate: 360 } : { rotate: 0 }}
+          transition={
+            live
+              ? { duration: 1.35, ease: easeOut }
+              : { duration: 0.45, ease: easeOut }
+          }
         />
         <circle cx="110" cy="70" r="4" fill="#ff5500" />
       </svg>
@@ -530,40 +597,67 @@ function TruthVisual({ type }) {
           />
         </pattern>
       </defs>
-      <circle
-        cx="70"
-        cy="70"
-        r="28"
-        stroke="currentColor"
-        strokeWidth="1"
-        fill={`url(#${denseId})`}
-      />
-      <circle
-        cx="70"
-        cy="70"
-        r="14"
-        stroke="currentColor"
-        strokeWidth="1"
-        fill="none"
-        strokeDasharray="2 2"
-      />
-      <circle
-        cx="150"
-        cy="70"
-        r="28"
-        stroke="currentColor"
-        strokeOpacity="0.25"
-        strokeWidth="1"
-        strokeDasharray="3 3"
-        fill="none"
-      />
-      <path
+      <motion.g
+        style={{ transformOrigin: "70px 70px" }}
+        animate={live ? { rotate: 360 } : { rotate: 0 }}
+        transition={
+          live
+            ? { duration: 1.4, ease: easeOut }
+            : { duration: 0.5, ease: easeOut }
+        }
+      >
+        <circle
+          cx="70"
+          cy="70"
+          r="28"
+          stroke="currentColor"
+          strokeWidth="1"
+          fill={`url(#${denseId})`}
+        />
+        <circle
+          cx="70"
+          cy="70"
+          r="14"
+          stroke="currentColor"
+          strokeWidth="1"
+          fill="none"
+          strokeDasharray="2 2"
+        />
+        <circle cx="70" cy="70" r="4.5" fill="#ff5500" />
+      </motion.g>
+      <motion.g
+        style={{ transformOrigin: "150px 70px" }}
+        animate={live ? { rotate: -360 } : { rotate: 0 }}
+        transition={
+          live
+            ? { duration: 1.4, ease: easeOut }
+            : { duration: 0.5, ease: easeOut }
+        }
+      >
+        <circle
+          cx="150"
+          cy="70"
+          r="28"
+          stroke="currentColor"
+          strokeOpacity="0.25"
+          strokeWidth="1"
+          strokeDasharray="3 3"
+          fill="none"
+        />
+      </motion.g>
+      <motion.path
         d="M98 64h24v12H98Z"
         fill={`url(#${orangeId})`}
         stroke="#ff5500"
         strokeWidth="1"
+        animate={live ? { scaleX: [1, 1.08, 1] } : { scaleX: 1 }}
+        style={{ transformOrigin: "110px 70px" }}
+        transition={
+          live
+            ? { duration: 0.9, ease: easeOut, delay: 0.1 }
+            : { duration: 0.25 }
+        }
       />
-      <circle cx="70" cy="70" r="4.5" fill="#ff5500" />
       <line
         x1="74.5"
         y1="70"
@@ -615,6 +709,41 @@ const entries = [
   },
 ];
 
+function StudyCard({ study }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <article
+      className="grid min-w-0 grid-rows-[minmax(260px,1fr)_auto] max-sm:grid-rows-[auto_auto]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setHovered(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setHovered(false);
+        }
+      }}
+    >
+      <div className="relative grid min-h-[260px] place-items-center overflow-hidden border-b border-[var(--line)] bg-[rgba(233,236,233,0.48)] after:absolute after:-bottom-[60px] after:-right-[35px] after:h-60 after:w-[150px] after:rotate-[18deg] after:bg-[repeating-linear-gradient(90deg,var(--ink)_0_1px,transparent_1px_5px)] after:opacity-[0.06] after:content-[''] max-sm:min-h-[180px]">
+        <div className="relative z-[1] w-[min(78%,280px)] text-[var(--ink)]">
+          <TruthVisual type={study.type} active={hovered} />
+        </div>
+      </div>
+      <div className="grid min-h-[190px] grid-cols-[24px_1fr] content-start gap-x-3.5 px-7 pb-6 pt-[30px] max-sm:min-h-[145px] max-sm:px-5 max-sm:pb-6">
+        <span className="row-span-2 font-['DM_Mono',monospace] text-[9px] text-[var(--orange)]">
+          {study.id}
+        </span>
+        <h3 className="m-0 text-[23px] font-normal tracking-[-0.045em]">
+          {study.title}
+        </h3>
+        <p className="mt-[18px] max-w-[260px] text-pretty text-sm font-light leading-[1.7] text-[var(--muted)]">
+          {study.body}
+        </p>
+      </div>
+    </article>
+  );
+}
+
 function StudiesPanel({ headingRef }) {
   return (
     <div className="h-full">
@@ -647,24 +776,7 @@ function StudiesPanel({ headingRef }) {
             y={22}
             className="min-w-0 border-r border-[var(--line)] last:border-r-0 max-sm:border-b max-sm:border-r-0 max-sm:last:border-b-0"
           >
-            <article className="grid min-w-0 grid-rows-[minmax(260px,1fr)_auto] max-sm:grid-rows-[auto_auto]">
-              <div className="relative grid min-h-[260px] place-items-center overflow-hidden border-b border-[var(--line)] bg-[rgba(233,236,233,0.48)] after:absolute after:-bottom-[60px] after:-right-[35px] after:h-60 after:w-[150px] after:rotate-[18deg] after:bg-[repeating-linear-gradient(90deg,var(--ink)_0_1px,transparent_1px_5px)] after:opacity-[0.06] after:content-[''] max-sm:min-h-[180px]">
-                <div className="relative z-[1] w-[min(78%,280px)] text-[var(--ink)]">
-                  <TruthVisual type={study.type} />
-                </div>
-              </div>
-              <div className="grid min-h-[190px] grid-cols-[24px_1fr] content-start gap-x-3.5 px-7 pb-6 pt-[30px] max-sm:min-h-[145px] max-sm:px-5 max-sm:pb-6">
-                <span className="row-span-2 font-['DM_Mono',monospace] text-[9px] text-[var(--orange)]">
-                  {study.id}
-                </span>
-                <h3 className="m-0 text-[23px] font-normal tracking-[-0.045em]">
-                  {study.title}
-                </h3>
-                <p className="mt-[18px] max-w-[260px] text-pretty text-sm font-light leading-[1.7] text-[var(--muted)]">
-                  {study.body}
-                </p>
-              </div>
-            </article>
+            <StudyCard study={study} />
           </Reveal>
         ))}
       </div>
@@ -715,24 +827,24 @@ function Workspace({ headingRef }) {
           <br />
           More intention.
         </h2>
-        <p className="mb-9 mt-7 max-w-[360px] text-pretty text-[13px] font-light leading-[1.75] text-[var(--muted)] max-sm:mb-7">
+        <p className="mb-9 mt-7 max-w-[360px] text-pretty text-sm font-light leading-[1.75] text-[var(--muted)] max-sm:mb-7">
           Search, inspect, copy, leave. Silo’s shell keeps the useful path short
           and makes sensitive actions visible.
         </p>
         <dl className="m-0 border-t border-[var(--line)]">
-          <div className="grid grid-cols-[1fr_auto] gap-3.5 border-b border-[var(--line)] py-3 font-['DM_Mono',monospace] text-[8px]">
+          <div className="grid grid-cols-[1fr_auto] gap-3.5 border-b border-[var(--line)] py-3 font-['DM_Mono',monospace] text-[10px]">
             <dt className="text-[var(--orange)]">Navigation</dt>
             <dd className="m-0 text-right text-[var(--muted)]">
               Arrow keys or j / k
             </dd>
           </div>
-          <div className="grid grid-cols-[1fr_auto] gap-3.5 border-b border-[var(--line)] py-3 font-['DM_Mono',monospace] text-[8px]">
+          <div className="grid grid-cols-[1fr_auto] gap-3.5 border-b border-[var(--line)] py-3 font-['DM_Mono',monospace] text-[10px]">
             <dt className="text-[var(--orange)]">Copy password</dt>
             <dd className="m-0 text-right text-[var(--muted)]">
               c · clears after 20s
             </dd>
           </div>
-          <div className="grid grid-cols-[1fr_auto] gap-3.5 border-b border-[var(--line)] py-3 font-['DM_Mono',monospace] text-[8px]">
+          <div className="grid grid-cols-[1fr_auto] gap-3.5 border-b border-[var(--line)] py-3 font-['DM_Mono',monospace] text-[10px]">
             <dt className="text-[var(--orange)]">One-time code</dt>
             <dd className="m-0 text-right text-[var(--muted)]">
               o · generated locally
@@ -745,7 +857,7 @@ function Workspace({ headingRef }) {
           className="overflow-hidden rounded-md border border-black/[0.18] bg-[var(--sheet)] shadow-[0_18px_45px_rgba(32,35,31,0.08)]"
           aria-label="Interactive preview of the Silo workspace"
         >
-          <div className="flex min-h-[42px] items-center justify-between border-b border-[var(--line)] px-4 font-['DM_Mono',monospace] text-[8px] tracking-[0.04em] text-[var(--muted)]">
+          <div className="flex min-h-[42px] items-center justify-between border-b border-[var(--line)] px-4 font-['DM_Mono',monospace] text-[10px] tracking-[0.04em] text-[var(--muted)]">
             <span>silo / default.vault</span>
             <span className="inline-flex items-center gap-[7px]">
               <i className="size-[5px] rounded-full bg-[var(--orange)]" />{" "}
@@ -754,14 +866,14 @@ function Workspace({ headingRef }) {
           </div>
           <div className="grid min-h-[410px] grid-cols-[0.78fr_1.22fr]">
             <div className="flex min-w-0 flex-col border-r border-[var(--line)]">
-              <div className="border-b border-[var(--line)] px-3.5 py-[15px] font-['DM_Mono',monospace] text-[8px] font-light text-[var(--muted)]">
+              <div className="border-b border-[var(--line)] px-3.5 py-[15px] font-['DM_Mono',monospace] text-[10px] font-light text-[var(--muted)]">
                 <span className="mr-2 text-[var(--orange)]">/</span> Search
                 authentications
               </div>
               <div className="grid gap-1 p-[7px]">
                 {entries.map((entry, index) => (
                   <button
-                    className="grid gap-[5px] rounded-[13px] border border-transparent bg-transparent px-3 py-[13px] text-left transition-colors duration-150 hover:border-[var(--line)] hover:bg-[rgba(251,251,248,0.72)] aria-pressed:border-black/[0.08] aria-pressed:bg-[var(--soft)] [&>span]:text-[11px] [&>span]:font-medium [&>small]:overflow-hidden [&>small]:text-ellipsis [&>small]:font-['DM_Mono',monospace] [&>small]:text-[8px] [&>small]:font-light [&>small]:text-[var(--muted)]"
+                    className="grid gap-[5px] rounded-[13px] border border-transparent bg-transparent px-3 py-[13px] text-left transition-colors duration-150 hover:border-[var(--line)] hover:bg-[rgba(251,251,248,0.72)] aria-pressed:border-black/[0.08] aria-pressed:bg-[var(--soft)] [&>span]:text-[11px] [&>span]:font-medium [&>small]:overflow-hidden [&>small]:text-ellipsis [&>small]:font-['DM_Mono',monospace] [&>small]:text-[10px] [&>small]:font-light [&>small]:text-[var(--muted)]"
                     key={entry.name}
                     aria-pressed={selected === index}
                     onClick={() => setSelected(index)}
@@ -772,26 +884,26 @@ function Workspace({ headingRef }) {
                   </button>
                 ))}
               </div>
-              <p className="mb-0 mt-auto border-t border-[var(--line)] px-3.5 py-3 font-['DM_Mono',monospace] text-[7px] font-light text-[var(--muted)]">
+              <p className="mb-0 mt-auto border-t border-[var(--line)] px-3.5 py-3 font-['DM_Mono',monospace] text-[9px] font-light text-[var(--muted)]">
                 {entries.length} entries · ↑↓ move · ↵ open
               </p>
             </div>
             <div className="flex min-w-0 flex-col p-6 max-sm:px-3.5 max-sm:py-[17px]">
-              <p className="m-0 font-['DM_Mono',monospace] text-[8px] font-light text-[var(--muted)]">
+              <p className="m-0 font-['DM_Mono',monospace] text-[10px] font-light text-[var(--muted)]">
                 Authentication / {entries[selected].name}
               </p>
               <h3 className="mb-7 mt-2.5 text-[28px] font-normal tracking-[-0.045em]">
                 {entries[selected].name}
               </h3>
-              <div className="grid gap-[7px] border-t border-[var(--line)] py-[13px] [&>span]:font-['DM_Mono',monospace] [&>span]:text-[7px] [&>span]:font-light [&>span]:text-[var(--muted)] [&>span]:uppercase [&>strong]:overflow-hidden [&>strong]:text-ellipsis [&>strong]:whitespace-nowrap [&>strong]:font-['DM_Mono',monospace] [&>strong]:text-[10px] max-sm:[&>strong]:text-[9px]">
+              <div className="grid gap-[7px] border-t border-[var(--line)] py-[13px] [&>span]:font-['DM_Mono',monospace] [&>span]:text-[9px] [&>span]:font-light [&>span]:text-[var(--muted)] [&>span]:uppercase [&>strong]:overflow-hidden [&>strong]:text-ellipsis [&>strong]:whitespace-nowrap [&>strong]:font-['DM_Mono',monospace] [&>strong]:text-[10px] max-sm:[&>strong]:text-[9px]">
                 <span>Username</span>
                 <strong>{entries[selected].user}</strong>
               </div>
-              <div className="grid gap-[7px] border-t border-[var(--line)] py-[13px] [&>span]:font-['DM_Mono',monospace] [&>span]:text-[7px] [&>span]:font-light [&>span]:text-[var(--muted)] [&>span]:uppercase [&>strong]:overflow-hidden [&>strong]:text-ellipsis [&>strong]:whitespace-nowrap [&>strong]:font-['DM_Mono',monospace] [&>strong]:text-[10px] max-sm:[&>strong]:text-[9px]">
+              <div className="grid gap-[7px] border-t border-[var(--line)] py-[13px] [&>span]:font-['DM_Mono',monospace] [&>span]:text-[9px] [&>span]:font-light [&>span]:text-[var(--muted)] [&>span]:uppercase [&>strong]:overflow-hidden [&>strong]:text-ellipsis [&>strong]:whitespace-nowrap [&>strong]:font-['DM_Mono',monospace] [&>strong]:text-[10px] max-sm:[&>strong]:text-[9px]">
                 <span>Password</span>
                 <strong>••••••••••••••••••</strong>
               </div>
-              <div className="grid gap-[7px] border-t border-[var(--line)] py-[13px] [&>span]:font-['DM_Mono',monospace] [&>span]:text-[7px] [&>span]:font-light [&>span]:text-[var(--muted)] [&>span]:uppercase">
+              <div className="grid gap-[7px] border-t border-[var(--line)] py-[13px] [&>span]:font-['DM_Mono',monospace] [&>span]:text-[9px] [&>span]:font-light [&>span]:text-[var(--muted)] [&>span]:uppercase">
                 <span>One-time code</span>
                 <strong className="overflow-hidden text-ellipsis whitespace-nowrap font-['DM_Mono',monospace] text-[10px] text-[var(--orange)] tabular-nums max-sm:text-[9px]">
                   {entries[selected].totp}{" "}
@@ -801,7 +913,7 @@ function Workspace({ headingRef }) {
                 </strong>
               </div>
               <button
-                className="mt-auto inline-flex min-h-10 self-start items-center justify-center gap-[9px] rounded-full bg-[var(--ink)] px-[18px] font-['DM_Mono',monospace] text-[8px] text-white transition-colors duration-150 hover:bg-[#30332f] [&>svg]:w-3.5 [&>svg]:fill-none [&>svg]:stroke-current [&>svg]:stroke-[1.4]"
+                className="mt-auto inline-flex min-h-10 self-start items-center justify-center gap-[9px] rounded-full bg-[var(--ink)] px-[18px] font-['DM_Mono',monospace] text-[10px] text-white transition-colors duration-150 hover:bg-[#30332f] [&>svg]:w-3.5 [&>svg]:fill-none [&>svg]:stroke-current [&>svg]:stroke-[1.4]"
                 onClick={copy}
                 aria-live="polite"
               >
