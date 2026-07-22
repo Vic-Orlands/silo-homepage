@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import {
+  AnimatePresence,
+  animate,
+  motion,
+  useReducedMotion,
+} from "motion/react";
 
 const easeOut = [0.215, 0.61, 0.355, 1];
 const easeMove = [0.645, 0.045, 0.355, 1];
@@ -326,6 +331,87 @@ function Hero() {
   );
 }
 
+function SessionClockHands({ live }) {
+  const primaryRef = useRef(null);
+  const echoRef = useRef(null);
+
+  useEffect(() => {
+    const setAngle = (node, angle) => {
+      if (node) node.setAttribute("transform", `rotate(${angle} 110 70)`);
+    };
+
+    if (!live) {
+      setAngle(primaryRef.current, 0);
+      setAngle(echoRef.current, 0);
+      return;
+    }
+
+    let cancelled = false;
+    let remaining = 2;
+    let sweep = null;
+    let bounce = null;
+
+    const play = () => {
+      if (cancelled || remaining <= 0) return;
+      remaining -= 1;
+
+      sweep?.stop();
+      bounce?.stop();
+      setAngle(primaryRef.current, 0);
+      setAngle(echoRef.current, 0);
+
+      sweep = animate(0, 360, {
+        duration: 1.35,
+        ease: easeOut,
+        onUpdate: (angle) => setAngle(primaryRef.current, angle),
+        onComplete: play,
+      });
+      bounce = animate(0, 360, {
+        type: "spring",
+        stiffness: 46,
+        damping: 12,
+        mass: 0.9,
+        onUpdate: (angle) => setAngle(echoRef.current, angle),
+      });
+    };
+
+    play();
+
+    return () => {
+      cancelled = true;
+      sweep?.stop();
+      bounce?.stop();
+    };
+  }, [live]);
+
+  return (
+    <>
+      <g ref={echoRef} opacity="0.4">
+        <line
+          x1="110"
+          y1="70"
+          x2="132"
+          y2="48"
+          stroke="#ff5500"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </g>
+      <g ref={primaryRef}>
+        <line
+          x1="110"
+          y1="70"
+          x2="132"
+          y2="48"
+          stroke="#ff5500"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      </g>
+    </>
+  );
+}
+
 function TruthVisual({ type, active = false }) {
   const id = useId().replaceAll(":", "");
   const reduce = useReducedMotion();
@@ -372,7 +458,11 @@ function TruthVisual({ type, active = false }) {
         </defs>
         <motion.g
           animate={live ? { y: -2 } : { y: 0 }}
-          transition={{ duration: 0.7, ease: easeOut }}
+          transition={{
+            duration: 0.7,
+            ease: easeOut,
+            repeat: live ? 1 : 0,
+          }}
         >
           <path
             d="M75 25h50l15 15v75H75Z"
@@ -409,7 +499,12 @@ function TruthVisual({ type, active = false }) {
           }
           transition={
             live
-              ? { duration: 2.2, ease: easeOut, times: [0, 0.45, 1] }
+              ? {
+                  duration: 2.2,
+                  ease: easeOut,
+                  times: [0, 0.45, 1],
+                  repeat: 1,
+                }
               : { duration: 0.6 }
           }
         />
@@ -422,7 +517,11 @@ function TruthVisual({ type, active = false }) {
           strokeWidth="0.5"
           style={{ transformOrigin: "100px 68px" }}
           animate={live ? { rotate: 180 } : { rotate: 0 }}
-          transition={{ duration: 1.8, ease: easeOut }}
+          transition={{
+            duration: 1.8,
+            ease: easeOut,
+            repeat: live ? 1 : 0,
+          }}
         />
         <motion.line
           x1="140"
@@ -439,7 +538,7 @@ function TruthVisual({ type, active = false }) {
           }
           transition={
             live
-              ? { duration: 1.7, ease: "linear", repeat: 0 }
+              ? { duration: 1.7, ease: "linear", repeat: 1 }
               : { duration: 0.5 }
           }
         />
@@ -455,7 +554,7 @@ function TruthVisual({ type, active = false }) {
           }
           transition={
             live
-              ? { duration: 1.8, ease: easeOut, delay: 0.3 }
+              ? { duration: 1.8, ease: easeOut, delay: 0.3, repeat: 1 }
               : { duration: 0.5 }
           }
         />
@@ -503,7 +602,7 @@ function TruthVisual({ type, active = false }) {
               : 70 + radius * Math.sin(angle)
             ).toFixed(6);
           return (
-            <motion.line
+            <line
               key={index}
               x1={point(38, "x")}
               y1={point(38, "y")}
@@ -512,20 +611,6 @@ function TruthVisual({ type, active = false }) {
               stroke={highlighted ? "#ff5500" : "currentColor"}
               strokeOpacity={highlighted ? 1 : 0.4}
               strokeWidth={highlighted ? 1.5 : 1}
-              animate={
-                live && highlighted
-                  ? { opacity: [0.35, 1, 0.35, 1] }
-                  : { opacity: 1 }
-              }
-              transition={
-                live && highlighted
-                  ? {
-                      duration: 2.4,
-                      delay: (index - 3) * 0.06,
-                      ease: "easeOut",
-                    }
-                  : { duration: 0.4 }
-              }
             />
           );
         })}
@@ -538,27 +623,7 @@ function TruthVisual({ type, active = false }) {
           strokeOpacity="0.1"
           strokeWidth="1"
         />
-        <motion.g
-          animate={live ? { rotate: 360 } : { rotate: 0 }}
-          transition={
-            live
-              ? { duration: 2.7, ease: easeOut }
-              : { duration: 0.9, ease: easeOut }
-          }
-          transformTemplate={({ rotate }) =>
-            `rotate(${Number(rotate) || 0} 110 70)`
-          }
-        >
-          <line
-            x1="110"
-            y1="70"
-            x2="132"
-            y2="48"
-            stroke="#ff5500"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </motion.g>
+        <SessionClockHands live={live} />
         <circle cx="110" cy="70" r="4" fill="#ff5500" />
       </svg>
     );
@@ -603,14 +668,12 @@ function TruthVisual({ type, active = false }) {
         </pattern>
       </defs>
       <motion.g
+        style={{ transformOrigin: "70px 70px" }}
         animate={live ? { rotate: 360 } : { rotate: 0 }}
         transition={
           live
-            ? { duration: 2.8, ease: easeOut }
-            : { duration: 1, ease: easeOut }
-        }
-        transformTemplate={({ rotate }) =>
-          `rotate(${Number(rotate) || 0} 70 70)`
+            ? { duration: 1.4, ease: easeOut, repeat: 1 }
+            : { duration: 0.5, ease: easeOut }
         }
       >
         <circle
@@ -633,14 +696,12 @@ function TruthVisual({ type, active = false }) {
         <circle cx="70" cy="70" r="4.5" fill="#ff5500" />
       </motion.g>
       <motion.g
+        style={{ transformOrigin: "150px 70px" }}
         animate={live ? { rotate: -360 } : { rotate: 0 }}
         transition={
           live
-            ? { duration: 2.8, ease: easeOut }
-            : { duration: 1, ease: easeOut }
-        }
-        transformTemplate={({ rotate }) =>
-          `rotate(${Number(rotate) || 0} 150 70)`
+            ? { duration: 1.4, ease: easeOut, repeat: 1 }
+            : { duration: 0.5, ease: easeOut }
         }
       >
         <circle
@@ -663,8 +724,8 @@ function TruthVisual({ type, active = false }) {
         style={{ transformOrigin: "110px 70px" }}
         transition={
           live
-            ? { duration: 1.8, ease: easeOut, delay: 0.2 }
-            : { duration: 0.5 }
+            ? { duration: 0.9, ease: easeOut, delay: 0.1, repeat: 1 }
+            : { duration: 0.25 }
         }
       />
       <line
