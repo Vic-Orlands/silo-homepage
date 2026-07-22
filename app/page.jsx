@@ -372,7 +372,7 @@ function TruthVisual({ type, active = false }) {
         </defs>
         <motion.g
           animate={live ? { y: -2 } : { y: 0 }}
-          transition={{ duration: 0.35, ease: easeOut }}
+          transition={{ duration: 0.7, ease: easeOut }}
         >
           <path
             d="M75 25h50l15 15v75H75Z"
@@ -409,8 +409,8 @@ function TruthVisual({ type, active = false }) {
           }
           transition={
             live
-              ? { duration: 1.1, ease: easeOut, times: [0, 0.45, 1] }
-              : { duration: 0.3 }
+              ? { duration: 2.2, ease: easeOut, times: [0, 0.45, 1] }
+              : { duration: 0.6 }
           }
         />
         <motion.circle
@@ -422,7 +422,7 @@ function TruthVisual({ type, active = false }) {
           strokeWidth="0.5"
           style={{ transformOrigin: "100px 68px" }}
           animate={live ? { rotate: 180 } : { rotate: 0 }}
-          transition={{ duration: 0.9, ease: easeOut }}
+          transition={{ duration: 1.8, ease: easeOut }}
         />
         <motion.line
           x1="140"
@@ -439,8 +439,8 @@ function TruthVisual({ type, active = false }) {
           }
           transition={
             live
-              ? { duration: 0.85, ease: "linear", repeat: 0 }
-              : { duration: 0.25 }
+              ? { duration: 1.7, ease: "linear", repeat: 0 }
+              : { duration: 0.5 }
           }
         />
         <motion.circle
@@ -455,8 +455,8 @@ function TruthVisual({ type, active = false }) {
           }
           transition={
             live
-              ? { duration: 0.9, ease: easeOut, delay: 0.15 }
-              : { duration: 0.25 }
+              ? { duration: 1.8, ease: easeOut, delay: 0.3 }
+              : { duration: 0.5 }
           }
         />
       </svg>
@@ -520,11 +520,11 @@ function TruthVisual({ type, active = false }) {
               transition={
                 live && highlighted
                   ? {
-                      duration: 1.2,
-                      delay: (index - 3) * 0.03,
+                      duration: 2.4,
+                      delay: (index - 3) * 0.06,
                       ease: "easeOut",
                     }
-                  : { duration: 0.2 }
+                  : { duration: 0.4 }
               }
             />
           );
@@ -538,22 +538,27 @@ function TruthVisual({ type, active = false }) {
           strokeOpacity="0.1"
           strokeWidth="1"
         />
-        <motion.line
-          x1="110"
-          y1="70"
-          x2="132"
-          y2="48"
-          stroke="#ff5500"
-          strokeWidth="2"
-          strokeLinecap="round"
-          style={{ transformOrigin: "110px 70px" }}
+        <motion.g
           animate={live ? { rotate: 360 } : { rotate: 0 }}
           transition={
             live
-              ? { duration: 1.35, ease: easeOut }
-              : { duration: 0.45, ease: easeOut }
+              ? { duration: 2.7, ease: easeOut }
+              : { duration: 0.9, ease: easeOut }
           }
-        />
+          transformTemplate={({ rotate }) =>
+            `rotate(${Number(rotate) || 0} 110 70)`
+          }
+        >
+          <line
+            x1="110"
+            y1="70"
+            x2="132"
+            y2="48"
+            stroke="#ff5500"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </motion.g>
         <circle cx="110" cy="70" r="4" fill="#ff5500" />
       </svg>
     );
@@ -598,12 +603,14 @@ function TruthVisual({ type, active = false }) {
         </pattern>
       </defs>
       <motion.g
-        style={{ transformOrigin: "70px 70px" }}
         animate={live ? { rotate: 360 } : { rotate: 0 }}
         transition={
           live
-            ? { duration: 1.4, ease: easeOut }
-            : { duration: 0.5, ease: easeOut }
+            ? { duration: 2.8, ease: easeOut }
+            : { duration: 1, ease: easeOut }
+        }
+        transformTemplate={({ rotate }) =>
+          `rotate(${Number(rotate) || 0} 70 70)`
         }
       >
         <circle
@@ -626,12 +633,14 @@ function TruthVisual({ type, active = false }) {
         <circle cx="70" cy="70" r="4.5" fill="#ff5500" />
       </motion.g>
       <motion.g
-        style={{ transformOrigin: "150px 70px" }}
         animate={live ? { rotate: -360 } : { rotate: 0 }}
         transition={
           live
-            ? { duration: 1.4, ease: easeOut }
-            : { duration: 0.5, ease: easeOut }
+            ? { duration: 2.8, ease: easeOut }
+            : { duration: 1, ease: easeOut }
+        }
+        transformTemplate={({ rotate }) =>
+          `rotate(${Number(rotate) || 0} 150 70)`
         }
       >
         <circle
@@ -654,8 +663,8 @@ function TruthVisual({ type, active = false }) {
         style={{ transformOrigin: "110px 70px" }}
         transition={
           live
-            ? { duration: 0.9, ease: easeOut, delay: 0.1 }
-            : { duration: 0.25 }
+            ? { duration: 1.8, ease: easeOut, delay: 0.2 }
+            : { duration: 0.5 }
         }
       />
       <line
